@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<extension version="3.9" type="plugin" group="vmpayment" method="upgrade">
+    <name>vmpayment - Acceptcoin</name>
+    <creationDate>Date</creationDate>
+    <author>Softile Limited</author>
+    <authorUrl>https://softile.limited</authorUrl>
+    <authorEmail>noreply@itlab-studio.com</authorEmail>
+    <copyright>Copyright (C) 2023 Softile Limited. All rights reserved.</copyright>
+    <license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
+    <version>1.0.0</version>
+    <description>
+        <![CDATA[<a href="https://acceptcoin.io" target="_blank">Acceptcoin</a> is a popular
+  crypto payment provider. Please add ID and Secret ID from your project settings. ]]>
+    </description>
+    <files>
+        <filename plugin="acceptcoin">acceptcoin.php</filename>
+        <folder>api</folder>
+        <folder>tmpl</folder>
+        <folder>assets</folder>
+    </files>
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field
+                        name="projectId"
+                        type="text"
+                        label="Project ID"
+                />
+                <field
+                        name="secretKey"
+                        type="text"
+                        label="Project Secret ID"
+                />
+                <field
+                        name="returnUrlSuccess"
+                        type="text"
+                        label="Successful status URL"
+                        description="Redirect URL after successful payment"
+                />
+                <field
+                        name="returnUrlFail"
+                        type="text"
+                        label="Failed status URL"
+                        description="Redirect URL after failed payment"
+                />
+            </fieldset>
+        </fields>
+    </config>
+    <!--todo add servers-->
+    <updateservers>
+        <server type="extension" name="VirtueMart plg_vmpayment_paybox Update Site"><![CDATA[http://virtuemart.net/releases/vm3/plg_vmpayment_paybox_update.xml]]></server>
+        <server type="collection">http://example.com/list.xml</server>
+        <server type="extension" priority="2" name="Acceptcoin Joomla Updates">http://example.com/extension.xml</server>
+        <server type="extension" name="Web Links Update Site">
+            https://raw.githubusercontent.com/joomla-extensions/weblinks/master/manifest.xml
+        </server>
+    </updateservers>
+</extension>
