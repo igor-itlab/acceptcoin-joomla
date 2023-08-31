@@ -20,6 +20,10 @@ if (!class_exists('ACUtils')) {
     require(VMPATH_ROOT . DS . 'plugins' . DS . 'vmpayment' . DS . 'acceptcoin' . DS . 'api' . DS . 'Services' . DS . 'ACUtils.php');
 }
 
+if (!class_exists('MailHelper')) {
+    require(VMPATH_ROOT . DS . 'plugins' . DS . 'vmpayment' . DS . 'acceptcoin' . DS . 'api' . DS . 'Services' . DS . 'MailHelper.php');
+}
+
 /**
  * Acceptcoin payment plugin:
  * @author Softile Limited
@@ -42,6 +46,8 @@ class plgVmPaymentAcceptCoin extends vmPSPlugin
     protected $_isInList = false;
 
     protected $imgPath = "https://acceptcoin.io/assets/images/logo50.png";
+
+    protected const STABLE_CURRENCY = "USD";
 
     protected const RESPONSE_STATUSES = [
         "PENDING"        => 'P',
@@ -208,14 +214,17 @@ class plgVmPaymentAcceptCoin extends vmPSPlugin
             return null;
         }
 
-        $email_currency = $this->getEmailCurrency($method);
-        $totalInPaymentCurrency = vmPSPlugin::getAmountInCurrency($order['details']['BT']->order_total, $method->payment_currency);
+        $emailCurrency = $this->getEmailCurrency($method);
+        $totalInPaymentCurrency = vmPSPlugin::getAmountValueInCurrency(
+            $order['details']['BT']->order_total,
+            $method->payment_currency
+        );
 
         $dbValues['order_number'] = $order['details']['BT']->order_number;
         $dbValues['virtuemart_paymentmethod_id'] = (int)$order['details']['BT']->virtuemart_paymentmethod_id;
-        $dbValues['payment_order_total'] = $totalInPaymentCurrency['value'];
+        $dbValues['payment_order_total'] = $totalInPaymentCurrency;
         $dbValues['payment_currency'] = $method->payment_currency;
-        $dbValues['email_currency'] = $email_currency;
+        $dbValues['email_currency'] = $emailCurrency;
 
         $this->storePSPluginInternalData($dbValues);
 
@@ -224,18 +233,39 @@ class plgVmPaymentAcceptCoin extends vmPSPlugin
 
         $modelOrder->updateStatusForOneOrder($order['details']['BT']->virtuemart_order_id, $order, true);
 
+        $stableCurrencyId = $this->getCurrencyId(self::STABLE_CURRENCY);
+
+        $paymentCurrency = CurrencyDisplay::getInstance($stableCurrencyId);
+        $paymentCurrency->_vendorCurrency = $stableCurrencyId;
+
+        $amountInUSD = $paymentCurrency->convertCurrencyTo($order['details']['BT']->payment_currency_id, $totalInPaymentCurrency);
+
+        $vendorModel = VmModel::getModel('vendor');
+        $vendorName = $vendorModel->getVendorName($order['details']['BT']->virtuemart_vendor_id);
+
         try {
             $link = AcceptcoinApi::createPayment(
                 $order['details']['BT']->order_number,
                 $projectId,
                 $secretKey,
-                $totalInPaymentCurrency['value'],
+                $amountInUSD,
                 $order['details']['BT']->virtuemart_paymentmethod_id,
                 $returnUrlSuccess,
                 $returnUrlFailed
             );
 
             $this->setTemplateData(['iframeLink' => $link]);
+
+            MailHelper::sendMessage($order['details']['BT']?->email, MailHelper::TYPE_NEW, [
+                'name'     => $order['details']['BT']->first_name,
+                'lastname' => $order['details']['BT']->last_name,
+                'amount'   => $totalInPaymentCurrency,
+                'currency' => $paymentCurrency->ensureUsingCurrencyCode($order['details']['BT']->payment_currency_id),
+                "link"     => $link,
+                'vendorId' => $order['details']['BT']->virtuemart_vendor_id,
+                'vendorName' => $vendorName
+            ]);
+
             $cart->emptyCart();
         } catch (Throwable $exception) {
             $this->setTemplateData(['error' => $exception->getMessage()]);
@@ -317,10 +347,24 @@ class plgVmPaymentAcceptCoin extends vmPSPlugin
 
         $order['order_status'] = self::RESPONSE_STATUSES[$response['data']['status']['value']];
 
-        AcceptcoinApi::sendMessage($order['details']['BT'], $response['data']['status']['value'], $response['data']);
+        MailHelper::sendMessage(
+            $order['details']['BT']?->email,
+            $response['data']['status']['value'],
+            [
+                'name'          => $order['details']['BT']->first_name,
+                'lastname'      => $order['details']['BT']->last_name,
+                'transactionId' => $response['data']['id'],
+                'date'          => date("Y-m-d H:i:s", $response['data']['createdAt']),
+                'vendorId'      => $order['details']['BT']->virtuemart_vendor_id
+            ]
+        );
 
         if ($response['data']['status']['value'] === self::STATUS_PROCESSED) {
-            $order['paid'] = ACUtils::getProcessedAmount($response['data']);
+            $orderCD = CurrencyDisplay::getInstance($order['details']['BT']->payment_currency_id);
+            $order['paid'] = $orderCD->convertCurrencyTo(
+                $this->getCurrencyId(self::STABLE_CURRENCY),
+                ACUtils::getProcessedAmount($response['data'])
+            );
         }
 
         $orderModel->updateStatusForOneOrder($order['details']['BT']->virtuemart_order_id, $order, true);
@@ -390,5 +434,22 @@ class plgVmPaymentAcceptCoin extends vmPSPlugin
     public function plgVmSetOnTablePluginParamsPayment($name, $id, &$table): bool
     {
         return $this->setOnTablePluginParams($name, $id, $table);
+    }
+
+    private function getCurrencyId($curr)
+    {
+
+        $currInt = '';
+        if (!empty($curr)) {
+            $this->_db = JFactory::getDBO();
+            $q = 'SELECT `virtuemart_currency_id` FROM `#__virtuemart_currencies` WHERE `currency_code_3`="' . $this->_db->escape($curr) . '"';
+            $this->_db->setQuery($q);
+            $currInt = $this->_db->loadResult();
+            if (empty($currInt)) {
+                vmWarn('Attention, couldnt find currency id in the table for id = ' . $curr);
+            }
+        }
+
+        return $currInt;
     }
 }
