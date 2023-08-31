@@ -33,6 +33,8 @@ class AcceptcoinApi
      * @param $projectSecret
      * @param $amount
      * @param $paymentMethodId
+     * @param $returnUrlSuccess
+     * @param $returnUrlFailed
      * @return mixed
      * @throws Exception
      */
@@ -94,87 +96,6 @@ class AcceptcoinApi
         }
 
         return $data['link'];
-    }
-
-
-    /**
-     * @param object $order
-     * @param string $type
-     * @param array $responseContent
-     * @param bool $isHtml
-     * @return bool|void
-     * @throws \PHPMailer\PHPMailer\Exception
-     */
-    public static function sendMessage(
-        object $order,
-        string $type,
-        array  $responseContent,
-        bool   $isHtml = true
-    )
-    {
-        $userEmail = $order->email;
-        $vendorId = $order->virtuemart_vendor_id;
-        $vendorModel = VmModel::getModel('vendor');
-        $vendorEmail = $vendorModel->getVendorEmail($vendorId);
-        $data = self::getEmailBody($type, $order, $responseContent);
-
-        if (!$data) {
-            return;
-        }
-
-        return JFactory::getMailer()
-            ->setSender($vendorEmail)
-            ->addRecipient($userEmail)
-            ->setSubject($data['subject'])
-            ->setBody($data['body'])
-            ->isHTML($isHtml)
-            ->send();
-    }
-
-
-    /**
-     * @param string $type
-     * @param object $order
-     * @param array $responseContent
-     * @return string[]|null
-     */
-    private static function getEmailBody(string $type, object $order, array $responseContent): ?array
-    {
-        switch ($type) {
-            case "FROZEN_DUE_AML":
-            {
-                return [
-                    "subject" => "Dirty coins were identified through AML checks",
-                    "body"    => "
-                       <div>
-                          <p>
-                            Dear, " . $order->first_name . " " . $order->last_name . ". Your transaction for " . $responseContent['amount'] . " " . $responseContent['projectPaymentMethods']['paymentMethod']['currency']['asset'] . " was blocked. 
-                            Transaction ID " . $responseContent['referenceId'] . ".
-                          </p>
-                          <p><b>To confirm the origin of funds, we ask that you fully answer the following questions:</b></p>
-                          <ol>
-                            <li>Through which platform did the funds come to you? If possible, please provide screenshots from the wallet/sender platform's withdrawal history, as well as links to both transactions on the explorer.</li>
-                            <li>For what service did you receive the funds? - What was the transaction amount, as well as the date and time it was recieved?</li>
-                            <li>Through which contact person did you communicate with the sender of the funds? If possible, please provide screenshots of your correspondence with the sender, where we can see confirmation of the transfer of funds.</li>
-                          </ol>
-  
-                          <br>
-                          <p>Additionally, we ask that you provide the following materials:</p>
-                          <ul>
-                            <li>Photo of one of your documents (passport, ID card or driver's license).</li>
-                            <li>A selfie with this document and a sheet of paper on which today's date and signature will be handwritten.</li>
-                          </ul>
-                          <p><b>Please carefully write down the answers to these questions and email to support@acceptcoin.io</b></p>
-                          <hr>
-                          NOTE: <i>Please, don’t answer this mail, send your answer only to support@acceptcoin.io</i>.
-                          </div>"
-                ];
-            }
-            default:
-            {
-                return null;
-            }
-        }
     }
 
 }
