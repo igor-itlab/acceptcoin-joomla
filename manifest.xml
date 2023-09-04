@@ -1,0 +1,38 @@
+<updates>
+    <update>
+        <name>VirtueMart - Payments, Acceptcoin</name>
+        <description>VirtueMart - Payments, Acceptcoin</description>
+        <type>plugin</type>
+        <folder>vmpayment</folder>
+        <element>standard</element>
+        <version>1.0.0</version>
+        <client>0</client>
+        <infourl>
+            https://acceptcoin.io/plugins/joomla
+        </infourl>
+        <downloads>
+            <downloadurl type="full" format="zip">https://raw.githubusercontent.com/igor-itlab/acceptcoin-joomla/master/acceptcoin.zip</downloadurl>
+        </downloads>
+        <maintainer>Softile Limited</maintainer>
+        <maintainerurl>https://softile.limited/</maintainerurl>
+        <targetplatform name="joomla" version="3.*"/>
+    </update>
+    <update>
+        <name>VirtueMart - Payments, Acceptcoin</name>
+        <description>VirtueMart - Payments, Acceptcoin</description>
+        <type>plugin</type>
+        <folder>vmpayment</folder>
+        <element>standard</element>
+        <version>1.0.0</version>
+        <client>0</client>
+        <infourl>
+            https://acceptcoin.io/plugins/joomla
+        </infourl>
+        <downloads>
+            <downloadurl type="full" format="zip">https://raw.githubusercontent.com/igor-itlab/acceptcoin-joomla/master/acceptcoin.zip</downloadurl>
+        </downloads>
+        <maintainer>Softile Limited</maintainer>
+        <maintainerurl>https://softile.limited/</maintainerurl>
+        <targetplatform name="joomla" version="4.*"/>
+    </update>
+</updates>
