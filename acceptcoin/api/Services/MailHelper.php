@@ -20,7 +20,7 @@ defined('_JEXEC') or die('Direct Access to ' . basename(__FILE__) . 'is not allo
 class MailHelper
 {
 
-    public const TYPE_NEW = "NEW";
+    public const TYPE_NEW            = "NEW";
     public const TYPE_FROZEN_DUE_AML = "FROZEN_DUE_AML";
 
     /**
@@ -92,12 +92,12 @@ class MailHelper
                         <div
                             style="margin:0 auto;padding:35px 15px;background:#fff;font-size:13px;color:#333333;line-height:1.5;text-align: left;">
                             <p style="margin:0 0 10px">
-                                Dear '. $vars['name'] .' ' . $vars['lastname'] .'
+                                Dear ' . $vars['name'] . ' ' . $vars['lastname'] . '
                             </p>
                             <p style="margin:0 0 10px;background-color:#F69E55;padding:15px;border-radius:25px">
                                 <span
                                     style="width:20px;height:20px;background:#EA7B29;border-radius:50%;color:#ffffff;margin-right:5px;font-size:14px;text-align:center;display:inline-block;">!</span>
-                                Your transaction '. $vars['transactionId'] .' from '. $vars['date'] .' was blocked
+                                Your transaction ' . $vars['transactionId'] . ' from ' . $vars['date'] . ' was blocked
                             </p>
                             <p><b>To confirm the origin of funds, we ask that you fully answer the following questions:</b></p>
                             <p>
@@ -146,7 +146,7 @@ class MailHelper
             {
                 return [
                     'subject' => "Payment created for " . $vars['vendorName'],
-                    'body' => '
+                    'body'    => '
                     <div style="display:block;width:100%;table-layout:fixed;font-size:13px;line-height:1.4;background:#135A30; text-align: center">
                     <div style="padding:10px 15px;display:inline-block;text-align: left">
                         <div style="padding:10px 15px;display:inline-block;">
@@ -169,18 +169,18 @@ class MailHelper
                         <div
                             style="table-layout:fixed;margin:0;padding:35px 15px;background:#fff;font-size:13px;color:#333333;line-height:1.5;">
                             <p style="margin:0 0 10px">
-                                Hello '. $vars['name'] .' ' . $vars['lastname'] . '
+                                Hello ' . $vars['name'] . ' ' . $vars['lastname'] . '
                             </p>
                             <p>
-                                Want to complete your payment for '. $vars['amount'] .' '. $vars['currency'] .'?
+                                Want to complete your payment for ' . $vars['amount'] . ' ' . $vars['currency'] . '?
                             </p>
                             <p>
-                                To finish up, go back to payment page or use the button below.
+                                To finish up, go back to ' . $vars['vendorName'] . ' payment page or use the button below.
                             </p>
                 
                             <p style="width:fit-content;margin:0 auto 10px;padding:20px">
                                 <a style="text-decoration:none;background-color:#016E3B;width:fit-content;border-radius:5px;padding:17px 80px;color:#fff"
-                                   href="'. $vars['link'] .'" target="_blank">
+                                   href="' . $vars['link'] . '" target="_blank">
                                     Pay
                                 </a>
                             </p>
