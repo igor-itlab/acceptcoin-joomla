@@ -55,8 +55,7 @@ class AcceptcoinApi
         $http = HttpFactory::getHttp();
         $callback = JURI::base() . 'index.php?option=com_virtuemart&view=vmplg&task=pluginresponsereceived&pm=' . $paymentMethodId;
 
-//        $acceptcoinUrl = "https://acceptcoin.io";
-        $acceptcoinUrl = "https://dev7.itlab-studio.com";
+        $acceptcoinUrl = "https://acceptcoin.io";
 
         $body = [
             "amount"      => (string)$amount,
