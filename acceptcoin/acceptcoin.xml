@@ -46,13 +46,7 @@
             </fieldset>
         </fields>
     </config>
-    <!--todo add servers-->
     <updateservers>
-        <server type="extension" name="VirtueMart plg_vmpayment_paybox Update Site"><![CDATA[http://virtuemart.net/releases/vm3/plg_vmpayment_paybox_update.xml]]></server>
-        <server type="collection">http://example.com/list.xml</server>
-        <server type="extension" priority="2" name="Acceptcoin Joomla Updates">http://example.com/extension.xml</server>
-        <server type="extension" name="Web Links Update Site">
-            https://raw.githubusercontent.com/joomla-extensions/weblinks/master/manifest.xml
-        </server>
+        <server type="extension" name="Update">https://raw.githubusercontent.com/igor-itlab/acceptcoin-joomla/master/manifest.xml</server>
     </updateservers>
 </extension>
