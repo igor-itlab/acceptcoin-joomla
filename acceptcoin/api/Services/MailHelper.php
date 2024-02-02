@@ -44,18 +44,22 @@ class MailHelper
             return;
         }
 
-        $userEmail = $receiverEmail;
-        $vendorId = $vars['vendorId'];
-        $vendorModel = VmModel::getModel('vendor');
-        $vendorEmail = $vendorModel->getVendorEmail($vendorId);
+        try {
+            $userEmail = $receiverEmail;
+            $vendorId = $vars['vendorId'];
+            $vendorModel = VmModel::getModel('vendor');
+            $vendorEmail = $vendorModel->getVendorEmail($vendorId);
 
-        return JFactory::getMailer()
-            ->setSender($vendorEmail)
-            ->addRecipient($userEmail)
-            ->setSubject($data['subject'])
-            ->setBody($data['body'])
-            ->isHTML($isHtml)
-            ->send();
+            return JFactory::getMailer()
+                ->setSender($vendorEmail)
+                ->addRecipient($userEmail)
+                ->setSubject($data['subject'])
+                ->setBody($data['body'])
+                ->isHTML($isHtml)
+                ->send();
+        } catch (Throwable $exception) {
+            return;
+        }
     }
 
     /**
