@@ -42,7 +42,7 @@ if (!class_exists('MailHelper')) {
  */
 class plgVmPaymentAcceptCoin extends vmPSPlugin
 {
-    public $version = "1.0";
+    public $version = '1.0.2';
     protected $_isInList = false;
 
     protected $imgPath = "https://acceptcoin.io/assets/images/logo50.png";

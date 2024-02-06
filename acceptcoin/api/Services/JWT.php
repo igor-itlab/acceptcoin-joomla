@@ -1,6 +1,10 @@
 <?php
 defined('_JEXEC') or die('Direct Access to ' . basename(__FILE__) . 'is not allowed.');
 
+if (!class_exists('JWT')) {
+    require(VMPATH_ROOT . DS . 'plugins' . DS . 'vmpayment' . DS . 'acceptcoin' . DS . 'api' . DS . 'Services' . DS . 'ACUtils.php');
+}
+
 /**
  * Acceptcoin payment plugin:
  * @author Softile Limited
@@ -34,15 +38,15 @@ class JWT
             "projectId" => $projectId
         ]);
 
-        $base64UrlHeader = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($header));
+        $urlHeader = str_replace(['+', '/', '='], ['-', '_', ''], ACUtils::transform($header));
 
-        $base64UrlPayload = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($payload));
+        $urlPayload = str_replace(['+', '/', '='], ['-', '_', ''], ACUtils::transform($payload));
 
-        $signature = hash_hmac('sha256', $base64UrlHeader . "." . $base64UrlPayload, $secret, true);
+        $signature = hash_hmac('sha256', $urlHeader . "." . $urlPayload, $secret, true);
 
-        $base64UrlSignature = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($signature));
+        $formattedSignature = str_replace(['+', '/', '='], ['-', '_', ''], ACUtils::transform($signature));
 
-        return $base64UrlHeader . "." . $base64UrlPayload . "." . $base64UrlSignature;
+        return $urlHeader . "." . $urlPayload . "." . $formattedSignature;
     }
 
 }

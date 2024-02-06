@@ -58,7 +58,7 @@ class MailHelper
                 ->isHTML($isHtml)
                 ->send();
         } catch (Throwable $exception) {
-            return;
+           return;
         }
     }
 
