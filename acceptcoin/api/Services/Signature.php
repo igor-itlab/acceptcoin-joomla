@@ -2,6 +2,10 @@
 
 defined('_JEXEC') or die('Direct Access to ' . basename(__FILE__) . 'is not allowed.');
 
+if (!class_exists('JWT')) {
+    require(VMPATH_ROOT . DS . 'plugins' . DS . 'vmpayment' . DS . 'acceptcoin' . DS . 'api' . DS . 'Services' . DS . 'ACUtils.php');
+}
+
 /**
  * Acceptcoin payment plugin:
  * @author Softile Limited
@@ -28,7 +32,7 @@ class Signature
      */
     public static function check(string $data, string $signature, string $key): bool
     {
-        return base64_encode(hash_hmac('sha256', $data, $key, true)) == $signature;
+        return ACUtils::transform(hash_hmac('sha256', $data, $key, true)) == $signature;
     }
 
 }

@@ -41,4 +41,38 @@ class ACUtils
 
         return $processedAmount[array_key_first($processedAmount)]['value'];
     }
+
+    /**
+     * @param $data
+     * @return string
+     */
+    public static function transform($data): string
+    {
+        $symbols = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+        $output = '';
+        $bits = 0;
+        $count = 0;
+
+        for ($i = 0; $i < strlen($data); $i++) {
+            $char = ord($data[$i]);
+            $bits = ($bits << 8) | $char;
+            $count += 8;
+
+            while ($count >= 6) {
+                $count -= 6;
+                $output .= $symbols[($bits >> $count) & 63];
+            }
+        }
+
+        if ($count > 0) {
+            $bits <<= (6 - $count);
+            $output .= $symbols[$bits & 63];
+        }
+
+        while (strlen($output) % 4 != 0) {
+            $output .= '=';
+        }
+
+        return $output;
+    }
 }
